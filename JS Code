@@ -1,0 +1,107 @@
+// clone function is for make a copy of 2-D array
+// .splice() does not work for 2-D array
+function clone(currentArray) {
+    var newArray = [];
+    for (var i = 0; i < currentArray.length; i++) {
+        newArray[i] = currentArray[i].slice();
+    }
+    return newArray;
+}
+
+
+function findFirstEmpty(board) {
+    var rowLen = 9;
+    var colLen = 9;
+    for(var i = 0; i < rowLen; i++) {
+        for(var j = 0; j < colLen; j++) {
+            if ((board[i][j]) == ".") {
+                return [i,j];
+            }
+        }
+    }
+    return null // indicating success
+
+}
+
+function validate(board, i, j, value){
+    // indended to check whethe value is fit for (i,j)
+
+    //row check
+    for(var col = 0; col < 9; col++) {
+        if (col == j) {
+            continue;
+        } else {
+            if ((board[i][col]) == value) {
+                //console.log("the postion is " + i +" " + col)
+                //console.log("i am failing at #1")
+                return false;
+            }
+        }
+    }
+    //colmn check
+    for(var row = 0; row < 9; row++) {
+        if (row == i) {
+            continue;
+        } else {
+            if (board[row][j] == value) {
+                //console.log("i am failing at #2")
+                return false
+            }
+        }
+    }
+    //block check
+    var blockRowNumber = Math.floor(i/3);
+    var blockColNumber = Math.floor(j/3);
+    for(var row = 0; row < 3; row++ ) {
+        for(var col = 0; col < 3; col++){
+            var curRow = 3*blockRowNumber + row;
+            var curCol = 3*blockColNumber + col;
+            if ((curRow == i) &&  (curCol == j)) {
+                continue;
+            } else {
+                if (board[curRow][curCol] == value) {
+                    //console.log("i am failing at #3")
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+for(var value = 0; value < 9; value++) {
+    //console.log(validate(board,0,2,value));
+}
+
+function tryBoard(board){
+    var curPosition = findFirstEmpty(board);
+    if (curPosition == null) {
+        return board;
+    }
+
+    for(var trial = 1; trial <= 9; trial++ ) {
+        var i = curPosition[0];
+        var j = curPosition[1];
+        var temp = clone(board);
+        
+        //console.log( "the postion is " + curPosition)
+        //console.log( "the value is " + trial)
+
+        //console.log("the check value is" + validate(temp, i, j, trial));
+        if (validate(temp, i, j, trial)) {
+            temp[i][j] = trial;
+            //console.log(temp)
+            var result = tryBoard(temp);
+            if (result != false) {
+                return result;
+            } else {
+                continue;
+            }
+        }
+       
+    }
+    return false;
+
+}
+
+//console.log(tryBoard(newBoard1))
